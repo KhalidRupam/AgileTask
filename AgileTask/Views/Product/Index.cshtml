@@ -1,0 +1,169 @@
+﻿@model AgileTask.Models.ProductViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+<button type="button" class="btn btn-primary mb-2 addBtn" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+    Add Item
+</button>
+<table class="table table-hover" id="myTable">
+    <thead>
+        <tr>
+            <th class="d-none">
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th class="d-none">
+                @Html.DisplayNameFor(model => model.TenantId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsAvailable)
+            </th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            if (Model.products.Count() > 0)
+            {
+                foreach (var item in Model.products)
+                {
+                    <tr>
+                        <td class="d-none">
+                            @Html.DisplayFor(modelItem => item.Id)
+                        </td>
+                        <td class="d-none">
+                            @Html.DisplayFor(modelItem => item.TenantId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Description)
+                        </td>
+                        <td>
+                            @{
+                                if (item.IsAvailable==true)
+                                {
+                                   <span>Yes</span>
+                                }
+                                else
+                                {
+                                    <span>No</span>
+                                }
+                            }
+                        </td>
+
+                        <td>
+                            <button class="btn btn-warning edit-btn edit" data-id="@item.Id"
+                                    data-name="@item.Name"
+                                    data-description="@item.Description"
+                                    data-is-available="@item.IsAvailable" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                Edit
+                            </button>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="6" class="text-center">No Data Found</td></tr>
+            }
+        }
+
+    </tbody>
+</table>
+
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <form method="post">
+                    <div class="card p-5 ">
+                        <div class="card-body">
+                            <button type="button" class="btn-close btnModal" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <h3 class="text-center" id="itemHeader"></h3>
+                            <h4 style="color:red;font-size:.9rem">@ViewBag.error</h4>
+                            <label for="Name">Name:</label>
+                            <input type="text" name="Name" id="Name" class="form-control" required />
+
+                            <br />
+
+                            <label for="Description">Description:</label>
+                            <input type="text" name="Description" id="Description" class="form-control" required />
+
+                            <br />
+
+                            <label for="IsAvailable">IsAvailable:</label>
+
+                            <select class="form-select" aria-label="IsAvailable" name="IsAvailable" id="IsAvailable">
+                                <option selected>IsAvailable</option>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+
+                            <input type="text" name="Id" id="Id" class="form-control d-none" />
+                            <br />
+
+                            <button type="submit" class="btn btn-success w-100">Submit</button>
+
+
+                        </div>
+
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+    {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.css" />
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#myTable").DataTable();
+
+            $(".edit").click(function () {
+                var productId = $(this).data('id');
+                var productName = $(this).data('name');
+                var productDescription = $(this).data('description');
+                var isAvailable = $(this).data('is-available');
+
+                var productObject = {
+                    Id: productId,
+                    Name: productName,
+                    Description: productDescription,
+                    IsAvailable: isAvailable
+                };
+                $("#Id").val(productId);
+                $("#Name").val(productName);
+                $("#Description").val(productDescription);
+
+                if (isAvailable === 'True') {
+                    $("#IsAvailable").val('true');
+                } else {
+                    $("#IsAvailable").val('false');
+                }
+                document.getElementById("itemHeader").innerHTML = "Update Item";
+                console.log(productObject);
+            });
+            $(".addBtn").click(function () {
+                $("#Id").val(0);
+                $("#Name").val("");
+                $("#Description").val("");
+                $("#IsAvailable").val('true');
+                var newText = "Add Item";
+                document.getElementById("itemHeader").innerHTML = newText;
+            })
+        });
+    </script>
+    }
